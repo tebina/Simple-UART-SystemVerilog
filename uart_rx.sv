@@ -7,10 +7,11 @@ module uart_rx #(
      3. CLK_FREQ   : freqency of input clock signal
 
 
+
     */
     DATA_WIDTH = 8,
-    BAUD_RATE = 115200,
-    CLK_FREQ = 100_000_000,
+    BAUD_RATE = 9600,
+    CLK_FREQ = 12_000_000,
 
     localparam LB_DATA_WIDTH    = $clog2(DATA_WIDTH),
                PULSE_WIDTH      = CLK_FREQ / BAUD_RATE,
@@ -27,6 +28,7 @@ module uart_rx #(
 
   //-----------------------------------------------------------------------------
   // noise removing filter
+
 
   function majority5(input [4:0] val);
     case (val)
@@ -53,6 +55,7 @@ module uart_rx #(
   //-----------------------------------------------------------------------------
   // description about input signal
 
+
   logic [1:0] sampling_cnt;
   logic [4:0] sig_q;
   logic       sig_r;
@@ -65,6 +68,7 @@ module uart_rx #(
     end else begin
       // connect to deserializer after removing noise
 
+
       if (sampling_cnt == 0) begin
         sig_q <= {sig, sig_q[4:1]};
       end
@@ -76,6 +80,7 @@ module uart_rx #(
 
   //----------------------------------------------------------------
   // description about receive UART signal
+
 
   typedef enum logic [1:0] {
     STT_DATA,
@@ -101,12 +106,14 @@ module uart_rx #(
       //-----------------------------------------------------------------------------
       // 3-state FSM
 
+
       case (state)
 
         //-----------------------------------------------------------------------------
         // state      : STT_DATA
         // behavior   : deserialize and recieve data
         // next state : when all data have recieved -> STT_STOP
+
 
         STT_DATA: begin
           if (0 < clk_cnt) begin
@@ -128,6 +135,7 @@ module uart_rx #(
         // behavior   : watch stop bit
         // next state : STT_WAIT
 
+
         STT_STOP: begin
           if (0 < clk_cnt) begin
             clk_cnt <= clk_cnt - 1;
@@ -140,6 +148,7 @@ module uart_rx #(
         // state      : STT_WAIT
         // behavior   : watch start bit
         // next state : when start bit is observed -> STT_DATA
+
 
         STT_WAIT: begin
           if (sig_r == 0) begin
@@ -160,6 +169,7 @@ module uart_rx #(
 
   //-----------------------------------------------------------------------------
   // description about output signal
+
 
   logic [DATA_WIDTH-1:0] data_r;
   logic                  valid_r;
