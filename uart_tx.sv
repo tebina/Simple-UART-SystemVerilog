@@ -8,6 +8,7 @@ module uart_tx #(
 
 
 
+
     */
     DATA_WIDTH = 8,
     BAUD_RATE = 9600,
@@ -18,12 +19,12 @@ module uart_tx #(
                LB_PULSE_WIDTH   = $clog2(PULSE_WIDTH),
                HALF_PULSE_WIDTH = PULSE_WIDTH / 2
 ) (
-    output logic sig,
-    output logic ready,
-    input  logic data,
-    input  logic valid,
-    input  logic clk,
-    input  logic rstn
+    output logic                  sig,
+    output logic                  ready,
+    input  logic [DATA_WIDTH-1:0] data,
+    input  logic                  valid,
+    input  logic                  clk,
+    input  logic                  rstn
 );
 
   typedef enum logic [1:0] {
@@ -54,12 +55,14 @@ module uart_tx #(
       // 3-state FSM
 
 
+
       case (state)
 
         //-----------------------------------------------------------------------------
         // state      : STT_DATA
         // behavior   : serialize and transmit data
         // next state : when all data have transmited -> STT_STOP
+
 
 
         STT_DATA: begin
@@ -83,6 +86,7 @@ module uart_tx #(
         // next state : STT_WAIT
 
 
+
         STT_STOP: begin
           if (0 < clk_cnt) begin
             clk_cnt <= clk_cnt - 1;
@@ -97,6 +101,7 @@ module uart_tx #(
         // state      : STT_WAIT
         // behavior   : watch valid signal, and assert start bit when valid signal assert
         // next state : when valid signal assert -> STT_STAT
+
 
 
         STT_WAIT: begin
